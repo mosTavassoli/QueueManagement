@@ -16,7 +16,6 @@ const baseURL = "/api";
 //Returns list of counters with the services they are associated with
 async function getCounters() {
     let url = "/counters";
-    let queryParams='';
     const response = await fetch(baseURL + url);
     const countersJson = await response.json();
     if(response.ok){

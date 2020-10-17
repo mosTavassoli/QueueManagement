@@ -5,7 +5,7 @@ class CounterList extends Component {
   render() {
     return (
       <Fragment>
-        <main role="main" className="col-md-12 ml-sm-auto col-lg-10 px-md-4">
+        <main role="main" className="col-md-12 ml-sm-auto col-lg-12 px-md-4">
           <h2>Getting a New Ticket</h2>
           <div className="table-responsive">
             <table className="table table-striped table-sm">
@@ -34,7 +34,7 @@ class CounterList extends Component {
 }
 function CounterRow(props) {
   return (
-    <tr counterId={props.counter.id}>
+    <tr counterid={props.counter.id}>
       <CounterData counter={props.counter} onClick={props.onClick} />
     </tr>
   );
@@ -59,11 +59,11 @@ function CounterData(props) {
   );
 }
 
-function IfAvailable(available) {
-  if (available === 0) {
-    return "Not Available";
-  } else {
-    return "Available";
-  }
-}
+// function IfAvailable(available) {
+//   if (available === 0) {
+//     return "Not Available";
+//   } else {
+//     return "Available";
+//   }
+// }
 export default CounterList;
