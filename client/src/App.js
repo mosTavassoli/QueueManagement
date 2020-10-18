@@ -4,12 +4,14 @@ import './App.css';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import Nav from './components/nav';
 import Body from './components/body';
-
+import DisplayScreen from './components/DisplayScreen';
+import {DISPLAY} from './shared/displayScreen';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+        displayList : DISPLAY,
        counters:[
          {
            id : 1,
@@ -61,7 +63,7 @@ class App extends Component {
       
       <Router>
       <Nav/>
-      
+        <DisplayScreen displayList={this.state.displayList}/>
         <Body counters={this.state.counters} onClick={this.submitRequest} />
         {/* <Switch>
           <Route path="/" exact component={Body} />
