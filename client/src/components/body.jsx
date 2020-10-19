@@ -10,7 +10,9 @@ class Body extends Component {
         <div className="row">
         
        {/* <Sidebar cats={this.props.cats} brands={this.props.brands}  onClick={this.props.onClick}/> */}
-       <CounterList onClick={this.props.onClick} counters={this.props.counters}/>
+       <CounterList
+       inProgress={this.props.inProgress} gotTicket={this.props.gotTicket}
+       onClick={this.props.onClick} counters={this.props.counters}/>
        </div></div>
       </Fragment>
     );

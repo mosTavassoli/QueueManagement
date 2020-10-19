@@ -11,6 +11,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+        inProgress : 0,
+        gotTicket:0,
         displayList : DISPLAY,
        counters:[
          {
@@ -48,12 +50,16 @@ class App extends Component {
 
   //Request new tocket to service (as customer)
   submitRequest = (req_type) => {
-      console.log("The request : " + req_type + ", has been selected");
+      //console.log("The request : " + req_type + ", has been selected");
       // API.submitRequest(req_type)
       // .then((counters) => this.setState({counters}))
       // .catch((errorObj) => {
       //   this.handleErrors(errorObj);
       // });
+      this.setState({inProgress:1});
+      setTimeout(()=>{
+        this.setState({inProgress:0,gotTicket:1});
+      }, 2000);
     
   }
   
@@ -64,7 +70,9 @@ class App extends Component {
       <Router>
       <Nav/>
         <DisplayScreen displayList={this.state.displayList}/>
-        <Body counters={this.state.counters} onClick={this.submitRequest} />
+        <Body
+        gotTicket={this.state.gotTicket}
+        inProgress={this.state.inProgress} counters={this.state.counters} onClick={this.submitRequest} />
         {/* <Switch>
           <Route path="/" exact component={Body} />
           <Route path="/counters" component={CarList}/>
