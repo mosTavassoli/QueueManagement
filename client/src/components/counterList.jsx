@@ -5,18 +5,20 @@ class CounterList extends Component {
   render() {
     return (
       <Fragment>
-        <main role="main" className="col-md-12 ml-sm-auto col-lg-12 px-md-4">
-          <h2>Getting a New Ticket</h2>
+        <main role="main" className="main mt-5 p-lg-4 p-xl-4 p-md-4 p-sm-4 col-md-12 ml-sm-auto col-lg-12 px-md-4">
+          
+          <h3 className="mb-2">Please select a new Ticket</h3>
           <div className="table-responsive">
-            <table className="table table-striped table-sm">
+            <table className="table table-hover text-center">
               <thead>
-                <tr>
+                <tr className="">
                   <th>#</th>
                   <th>Type of Service</th>
                   <th>Available Counters</th>
+                  <th></th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody >
                 {this.props.counters.map((counter) => (
                   <CounterRow
                     key={counter.id}
@@ -34,7 +36,7 @@ class CounterList extends Component {
 }
 function CounterRow(props) {
   return (
-    <tr counterid={props.counter.id}>
+    <tr  counterid={props.counter.id}>
       <CounterData counter={props.counter} onClick={props.onClick} />
     </tr>
   );
@@ -47,6 +49,7 @@ function CounterData(props) {
       <td>{props.counter.counters}</td>
       <td>
         <button
+         className="btn btn-outline-success"
           value={props.counter.id}
           onClick={() => {
             props.onClick(props.counter.name);
