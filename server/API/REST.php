@@ -1,5 +1,5 @@
 <?php
-require_once "../libs/vendor/autoload.php";
+require_once "../vendor/autoload.php";
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, GET, POST");
