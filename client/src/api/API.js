@@ -33,12 +33,13 @@ async function getCounters() {
 async function getTicketToServe(counterId){
     let url = '/ticket'
     if(counterId){
-        const queryParams = "?toserve&countenId=" + counterId;
+        const queryParams = "?toserve&counterId=" + counterId;
         url += queryParams;
     }
     const response = await fetch(baseURL + url);
     const ticketJson = await response.json();
     if(response.ok){
+        console.log(ticketJson);
         return ticketJson;
     } else {
         let err = {status: response.status, errObj:ticketJson};
