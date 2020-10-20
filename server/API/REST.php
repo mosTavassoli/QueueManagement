@@ -36,11 +36,9 @@ if(!function_exists("create_new_ticket")){
 				return;
 			}
 
-			//getting the most recent dispplay_id. This way is definitely not parallel safe
+			//getting the most recent display_id. This way is definitely not parallel safe
 			//but using SQLite means you don't give a single f* of parallelism
 			
-			$db = new SQLite3("../db.sqlite");
-			//checking if the service exists
 			$value = $db->querySingle("SELECT ts_create, display_id FROM tickets ORDER BY ts_create DESC LIMIT 1", true);
 			if($value === false) throw new Error($db->lastErrorCode(), $db->lastErrorCode());
 
@@ -52,7 +50,7 @@ if(!function_exists("create_new_ticket")){
 
 			//create the ticket
 
-			$statement = $db->prepare("INSERT INTO tickets (display_id, service_id, create_ts) VALUES (:displayId, :serviceId, :creationTs)");
+			$statement = $db->prepare("INSERT INTO tickets (display_id, service_id, ts_create) VALUES (:displayId, :serviceId, :creationTs)");
 			$statement->bindValue(":displayId", $new_ticket_display_id, SQLITE3_INTEGER);
 			$statement->bindValue(":serviceId", $service_id, SQLITE3_INTEGER);
 			$statement->bindValue(":creationTs", time(), SQLITE3_INTEGER);
