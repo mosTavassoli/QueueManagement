@@ -70,7 +70,7 @@ if(!function_exists("create_new_ticket")){
 /*Documentation for FastRoute can be found here: https://github.com/nikic/FastRoute */
 
 //define the routes
-$dispacher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r){
+$dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r){
 	$r->addRoute('POST', API_PATH."/tickets", "create_new_ticket");
 });
 
