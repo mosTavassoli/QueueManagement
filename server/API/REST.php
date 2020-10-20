@@ -18,7 +18,7 @@ if(!function_exists("create_new_ticket")){
 	 * 
 	 * @return void
 	 */
-	function create_new_ticket(){
+	function create_new_ticket($vars){
 		$service_id = $_POST["serviceID"];
 		try{
 			$db = new SQLite3("../db.sqlite");
@@ -73,4 +73,31 @@ if(!function_exists("create_new_ticket")){
 $dispacher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r){
 	$r->addRoute('POST', API_PATH."/tickets", "create_new_ticket");
 });
+
+// Fetch method and URI from somewhere
+$httpMethod = $_SERVER['REQUEST_METHOD'];
+$uri = $_SERVER['REQUEST_URI'];
+
+// Strip query string (?foo=bar) and decode URI
+if (false !== $pos = strpos($uri, '?')) {
+    $uri = substr($uri, 0, $pos);
+}
+$uri = rawurldecode($uri);
+
+$routeInfo = $dispatcher->dispatch($httpMethod, $uri);
+switch ($routeInfo[0]) {
+	case FastRoute\Dispatcher::NOT_FOUND:
+		http_response_code(404);
+        break;
+    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+        $allowedMethods = $routeInfo[1];
+		http_response_code(405);
+        // ... 405 Method Not Allowed
+        break;
+    case FastRoute\Dispatcher::FOUND:
+        $handler = $routeInfo[1];
+		$vars = $routeInfo[2];
+		$handler($vars);
+        break;
+}
 ?>
