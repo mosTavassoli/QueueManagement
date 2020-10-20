@@ -68,7 +68,7 @@ if(!function_exists("create_new_ticket")){
 			$value = $result->fetchArray(SQLITE3_NUM);
 			$queue_length = $value[0];
 
-			echo json_encode(array("success" => true, "displayId" => $new_ticket_display_id, "ticketId" => $db->lastInsertRowID, "serviceId" => intval($service_id), "queueLength" => $queue_length));
+			echo json_encode(array("success" => true, "displayId" => $new_ticket_display_id, "ticketId" => $db->lastInsertRowID(), "serviceId" => intval($service_id), "queueLength" => $queue_length));
 
 			$db->close();
 		}
