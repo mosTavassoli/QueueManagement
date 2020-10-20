@@ -5,6 +5,7 @@ import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import Nav from './components/nav';
 import Body from './components/body';
 import DisplayScreen from './components/DisplayScreen';
+import OfficerScreen from './components/OfficerScreen';
 import {DISPLAY} from './shared/displayScreen';
 
 class App extends Component {
@@ -28,7 +29,9 @@ class App extends Component {
            name: "Tracking Packages",
            counters: "4"
          }
-       ]}
+       ],
+       ticketToCall: 453
+      }
   }
   
   componentDidMount(){
@@ -62,13 +65,15 @@ class App extends Component {
       
       
       <Router>
+      
       <Nav/>
+      <Route exact path="/">
         <DisplayScreen displayList={this.state.displayList}/>
         <Body counters={this.state.counters} onClick={this.submitRequest} />
-        {/* <Switch>
-          <Route path="/" exact component={Body} />
-          <Route path="/counters" component={CarList}/>
-        </Switch> */}
+      </Route>
+      <Route path="/officer">
+        <OfficerScreen ticketToCall={this.state.ticketToCall}/>
+      </Route>
       </Router>
      );
   }
