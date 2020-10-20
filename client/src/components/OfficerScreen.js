@@ -2,21 +2,33 @@ import React from "react";
 import { Col, Container, Row, Button } from "react-bootstrap";
 
 class OfficerScreen extends React.Component {
+    constructor(props) {
+        super(props)
+        
+    }
+
     state = {
-        called: false,
+        called: true,
         counterChosen: false,
         count: 0
     };
 
+    served(){
+        this.setState({called: true})
+    }
+
     callCitizen(){
-        this.setState({called: !this.state.called})
+        
+        this.props.callTicket(this.state.count)
+        this.setState({called: false})
+        
     }
 
     choseCounter(event){
         event.preventDefault()
         this.setState({counterChosen: true})
         this.setState({count: this.refs.counter.value})
-        console.log(this.refs.counter.value)
+        
     }
 
     render() {
@@ -42,7 +54,7 @@ class OfficerScreen extends React.Component {
             </Row>
             <Row>
             <Col md={5}></Col>
-            <Button variant="success" style={{marginTop : 20}} onClick={this.callCitizen.bind(this)}>
+            <Button variant="success" style={{marginTop : 20}} onClick={this.served.bind(this)}>
             Ticket served
             </Button>
             
@@ -52,8 +64,9 @@ class OfficerScreen extends React.Component {
     }}else{
         return(
         <Container>
-            <Row>
-                <Col md={5}></Col>
+            <Row style={{marginTop : 20}}>
+                <Col md={4}></Col>
+                Select counter:
                 <form onSubmit={this.choseCounter.bind(this)}>
                     <input type="number" ref="counter"></input>
                     <Button variant="primary" type="submit">Submit</Button>

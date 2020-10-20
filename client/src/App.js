@@ -65,6 +65,19 @@ class App extends Component {
       }, 2000);
     
   }
+
+  callTicketAsOfficer = (counterId) => {
+    
+    this.setState({ticketToCall: 9});
+
+    //API.getTicketToServe(counterId)
+    //.then((ticket) => {
+    //  this.setState({ticketToCall: ticket}); // does this work? maybe ticket.something
+    //})
+    //.catch((errorObj) => {
+    //  this.handleErrors(errorObj);
+    //});
+  }
   
   render() { 
     return ( 
@@ -84,7 +97,7 @@ class App extends Component {
         </Switch> */}
       </Route>
       <Route path="/officer">
-        <OfficerScreen ticketToCall={this.state.ticketToCall}/>
+        <OfficerScreen ticketToCall={this.state.ticketToCall} callTicket={this.callTicketAsOfficer}/>
       </Route>
         
       </Router>

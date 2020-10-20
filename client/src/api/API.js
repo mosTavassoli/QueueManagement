@@ -30,6 +30,22 @@ async function getCounters() {
 
 
 //Get ticket from queue to serve (as counter officer)
+async function getTicketToServe(counterId){
+    let url = '/ticket'
+    if(counterId){
+        const queryParams = "?toserve&countenId=" + counterId;
+        url += queryParams;
+    }
+    const response = await fetch(baseURL + url);
+    const ticketJson = await response.json();
+    if(response.ok){
+        return ticketJson;
+    } else {
+        let err = {status: response.status, errObj:ticketJson};
+        throw err;  // An object with the error coming from the server
+    }
+
+}
 
 
 //Get list of tickets served (as public screen)
@@ -41,5 +57,5 @@ async function getCounters() {
 //Create a new counter (as administrator)
 
 
-const API = {getCounters} ;
+const API = {getCounters, getTicketToServe} ;
 export default API;
