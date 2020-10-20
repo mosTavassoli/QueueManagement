@@ -1,5 +1,10 @@
 body {
   font-size: 0.875rem;
+  
+}
+
+.main, .display{
+  font-family: 'Open Sans', sans-serif;
 }
 
 .feather {

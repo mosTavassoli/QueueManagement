@@ -8,7 +8,7 @@ class DiaplayList extends React.Component {
               <Row>
                 <Col md={2}></Col>
                 <Col md={8}>
-                    <Table striped bordered hover size="sm" className="mt-5">
+                    <Table striped bordered  className="text-center display  mt-5">
                       <thead>
                           <tr><th  colSpan="3" className="center">In Service</th></tr>
                         <tr>
@@ -28,7 +28,7 @@ class DiaplayList extends React.Component {
                       </tbody>
                     </Table>
 
-                    <Table striped bordered hover size="sm" className="mt-3">
+                    <Table striped bordered   className="text-center display  mt-3">
                       <thead>
                         <tr>
                           <th>Queue Length</th>
