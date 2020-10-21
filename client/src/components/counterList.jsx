@@ -33,12 +33,28 @@ class CounterList extends Component {
               </table>
             </div>
           ) : (
-            <div class="container p-3 my-2 border">
-              <h1>Ticket Number : 43</h1>
-              <h5 className="mt-n1 mb-5 pr-2 text-muted">Type : Openning Account</h5>
-              
-              <h5 className="mt-5">People in front of you: 4</h5>
-            </div>
+            <>
+              <div className="container ticket p-3 my-2 border">
+                <h1>Ticket Number : {this.props.ticket.ticketId}</h1>
+                <h5 className="mt-n1 mb-5 pr-2 text-muted">
+                  {this.props.ticket.serviceId === 1 && (
+                    <p>Service : Openning Account</p>
+                  )}
+                  {this.props.ticket.serviceId === 2 && (
+                    <p>Service : Sending Package</p>
+                  )}
+                </h5>
+
+                <h5 className="mt-5">
+                  People in front of you: {this.props.ticket.queueLength}
+                </h5>
+              </div>
+              <div className="text-center">
+                <button onClick={() => {this.props.handleReturn()}} className="btn btn-primary ">
+                  Return
+                </button>
+              </div>
+            </>
           )}
         </main>
       </Fragment>
@@ -69,7 +85,7 @@ function CounterData(props) {
             className="btn btn-outline-success"
             value={props.counter.id}
             onClick={() => {
-              props.onClick(props.counter.name);
+              props.onClick(1);
             }}
           >
             New Ticket

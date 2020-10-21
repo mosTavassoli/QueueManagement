@@ -15,6 +15,7 @@ class App extends Component {
         inProgress : 0,
         gotTicket:0,
         displayList : DISPLAY,
+        ticket:{},
        counters:[
          {
            id : 1,
@@ -52,19 +53,26 @@ class App extends Component {
 
 
   //Request new tocket to service (as customer)
-  submitRequest = (req_type) => {
-      //console.log("The request : " + req_type + ", has been selected");
-      // API.submitRequest(req_type)
-      // .then((counters) => this.setState({counters}))
-      // .catch((errorObj) => {
-      //   this.handleErrors(errorObj);
-      // });
+  getTicket = (serviceId) => {
+      //console.log("The request : " + serviceId + ", has been selected");
       this.setState({inProgress:1});
-      setTimeout(()=>{
-        this.setState({inProgress:0,gotTicket:1});
-      }, 2000);
-    
+      console.log(serviceId);
+      API.getTicket(serviceId)
+      .then((ticket) => {
+        console.log(ticket);
+        this.setState({ticket:ticket});
+        this.setState({inProgress:0, gotTicket:1});})
+      .catch((errorObj) => {
+        this.handleErrors(errorObj);
+        console.log('there is an error')
+      });
   }
+
+  //return to choosing a new ticket
+  handleReturn =()=>{
+    this.setState({inProgress:0, gotTicket:0});
+    console.log("I handled it")
+  };
 
   callTicketAsOfficer = (counterId) => {
     
@@ -92,8 +100,8 @@ class App extends Component {
       <Route exact path="/">
         <DisplayScreen displayList={this.state.displayList}/>
         <Body
-        gotTicket={this.state.gotTicket}
-        inProgress={this.state.inProgress} counters={this.state.counters} onClick={this.submitRequest} />
+        gotTicket={this.state.gotTicket} ticket={this.state.ticket} handleReturn={this.handleReturn}
+        inProgress={this.state.inProgress} counters={this.state.counters} onClick={this.getTicket} />
         {/* <Switch>
           <Route path="/" exact component={Body} />
           <Route path="/counters" component={CarList}/>
