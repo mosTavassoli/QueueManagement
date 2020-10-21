@@ -98,5 +98,5 @@ async function getListOfServedTickets() {
 //Create a new counter (as administrator)
 
 
-const API = {getCounters, getTicketToServe, getListOfServedTickets} ;
+const API = {getCounters, getTicketToServe, getListOfServedTickets,getTicket} ;
 export default API;
