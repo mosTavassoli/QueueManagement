@@ -6,7 +6,8 @@ header("Access-Control-Allow-Methods: PUT, GET, POST");
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
 header("Content-Type: application/json");
 
-define("API_PATH", "/API/REST.php");
+//define("API_PATH", "/API/REST.php");
+define("API_PATH", "/sfteng/office-queue/server/API/REST.php");
 
 define("START_OF_DISPLAY_ID", 1); //this is the display id that will be used as start each day
 
@@ -19,7 +20,6 @@ if (!function_exists("create_new_ticket")) {
 	 * @return void
 	 */
 	function create_new_ticket($vars) {
-		var_dump($_POST);
 		$service_id = $_POST["serviceID"];
 		try {
 			$db = new SQLite3("../db.sqlite");
@@ -166,12 +166,39 @@ if (!function_exists('serve_ticket')) {
 	}
 }
 
+if(!function_exists("print_services")){
+	function print_services($vars){
+		try{
+			$db = new SQLite3("../db.sqlite");
+
+			$result = $db->query("SELECT * FROM services");
+
+			if ($result === false) {
+				throw new Error($db->lastErrorCode(), $db->lastErrorCode());
+			}
+			
+			$ret = array();
+
+			while($value = $result->fetchArray(SQLITE3_ASSOC)){
+				$ret[] = array("serviceId" => $value["ID"], "serviceName" => $value["name"], "expectedSeconds" => $value["expected_s"]);
+			}
+
+			echo json_encode($ret);
+		}
+		catch(Exception $e){
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+		}
+	}
+}
+
 /*Documentation for FastRoute can be found here: https://github.com/nikic/FastRoute */
 
 //define the routes
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
 	$r->addRoute('POST', API_PATH . "/ticket", "create_new_ticket");
 	$r->addRoute('GET', API_PATH . '/ticket', 'serve_ticket');
+
+	$r->addRoute('GET', API_PATH . '/services', 'print_services');
 });
 
 // Fetch method and URI from somewhere
