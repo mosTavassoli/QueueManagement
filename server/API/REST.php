@@ -80,7 +80,7 @@ if (!function_exists('serve_ticket')) {
 
 	function serve_ticket($vars) {
 
-
+		$db = null;
 		try {
 			// Get counter id from query
 			$counterId = null;
@@ -164,7 +164,8 @@ if (!function_exists('serve_ticket')) {
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
 		} finally {
-			$db->close();
+			if ($db)
+				$db->close();
 		}
 	}
 }
