@@ -84,12 +84,10 @@ class App extends Component {
   
   render() { 
     return ( 
-      
-      
-      <Router>
-      
+      <>
       <Nav/>
-      <Route exact path="/">
+      <Switch>
+        <Route exact path="/">
         <DisplayScreen displayList={this.state.displayList}/>
         <Body
         gotTicket={this.state.gotTicket}
@@ -102,8 +100,11 @@ class App extends Component {
       <Route path="/officer">
         <OfficerScreen ticketToCall={this.state.ticketToCall} callTicket={this.callTicketAsOfficer}/>
       </Route>
+      </Switch>
+      
         
-      </Router>
+      
+      </>
      );
   }
 }
