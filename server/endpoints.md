@@ -19,7 +19,7 @@
 	- return { ticketId, displayId, serviceId }
 
 # Get list of tickets served (as public screen)
-- GET ticket?served
+- GET ticket?served[&count=123]
 	return [{ ticketId, displayId, counterId, serviceId, timestampServed, queueLength }, ...]
 
 # Get list of the available services
