@@ -39,7 +39,7 @@ async function getTicket(serviceId) {
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.onload = function () {
-      if (req.status == 200) {
+      if (req.status === 200) {
         const response = req.response;
         let obj = JSON.parse(response);
         const ticket = new Ticket(obj.ticketId, obj.displayId, obj.serviceId, obj.queueLength, obj.success);
@@ -81,8 +81,7 @@ async function getListOfServedTickets() {
       const response = await fetch(`${baseURL}/ticket?served`);
       const listServedTickets = await response.json();
       if (response.ok) {
-        console.log(listServedTickets);
-        return listServedTickets;
+        return listServedTickets[0];
       } else {
         return [];
       }

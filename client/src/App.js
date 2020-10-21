@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import API from './api/API';
 import './App.css';
-import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
+import {BrowserRouter as Switch, Route} from 'react-router-dom';
 import Nav from './components/nav';
 import Body from './components/body';
 import DisplayScreen from './components/DisplayScreen';
@@ -16,6 +16,7 @@ class App extends Component {
         gotTicket:0,
         displayList : DISPLAY,
         ticket:{},
+        ticketList:[],
        counters:[
          {
            id : 1,
@@ -89,6 +90,21 @@ class App extends Component {
       //this.handleErrors(errorObj);
     });
   }
+
+  servedTicketLists = () => {
+    API.getListOfServedTickets()
+      .then((ticketLists) => {
+         this.setState({
+          ticketList: ticketLists || [],
+        })
+      }     
+      )
+      .catch((errorObj) => {
+        this.setState({
+          err: errorObj.errors[0].msg,
+        });
+      });
+  };
   
   render() { 
     return ( 
@@ -96,7 +112,7 @@ class App extends Component {
       <Nav/>
       <Switch>
         <Route exact path="/">
-        <DisplayScreen displayList={this.state.displayList}/>
+        <DisplayScreen ticketList={this.state.ticketList} servedTicketLists={this.servedTicketLists}/>
         <Body
         gotTicket={this.state.gotTicket} ticket={this.state.ticket} handleReturn={this.handleReturn}
         inProgress={this.state.inProgress} counters={this.state.counters} onClick={this.getTicket} />
