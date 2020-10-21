@@ -1,4 +1,4 @@
-import Counter from "./Counter";
+import Service from "./Service";
 import Ticket from "./Ticket";
 const baseURL = "/API/REST.php";
 
@@ -14,15 +14,15 @@ const baseURL = "/API/REST.php";
 //     }
 // }
 
-//Returns list of counters with the services they are associated with
-async function getCounters() {
-  let url = "/counters";
+//Returns list of services
+async function getServices() {
+  let url = "/services";
   const response = await fetch(baseURL + url);
-  const countersJson = await response.json();
+  const serviceJson = await response.json();
   if (response.ok) {
-    return countersJson.map((c) => new Counter(c.counterId, c.serviceId));
+    return serviceJson.map((s) => new Service(s.serviceId, s.serviceName));
   } else {
-    let err = { status: response.status, errObj: countersJson };
+    let err = { status: response.status, errObj: serviceJson };
     throw err; // An object with the error coming from the server
   }
 }
@@ -97,5 +97,5 @@ async function getListOfServedTickets() {
 //Create a new counter (as administrator)
 
 
-const API = {getCounters, getTicketToServe, getListOfServedTickets,getTicket} ;
+const API = {getServices, getTicketToServe, getListOfServedTickets,getTicket} ;
 export default API;

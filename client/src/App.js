@@ -17,32 +17,19 @@ class App extends Component {
         displayList : DISPLAY,
         ticket:{},
         ticketList:[],
-       counters:[
-         {
-           id : 1,
-           name: "Send Package",
-           counters : "1,2,3"
-         },
-         {
-           id : 2,
-           name: "Openning Acount",
-           counters : "2,3"
-         },
-         {
-           id : 3,
-           name: "Tracking Packages",
-           counters: "4"
-         }
-       ],
+        services:[],
        ticketToCall: 453
       }
   }
   
   componentDidMount(){
-    //Returns list of counters with the counters they are associated with , save them on the state and pass them to the components through props
-    // API.getcounters(0,0)
-    // .then((counters)=>{this.setState({counters})})
-    // .catch((err)=>console.log(err));
+    //Returns list of services , save them on the state and pass them to the components through props
+    API.getServices()
+    .then(
+      (services)=>{
+        this.setState({services:services})}
+      )
+    .catch((err)=>console.log(err));
 
     
 
@@ -57,22 +44,19 @@ class App extends Component {
   getTicket = (serviceId) => {
       //console.log("The request : " + serviceId + ", has been selected");
       this.setState({inProgress:1});
-      console.log(serviceId);
       API.getTicket(serviceId)
       .then((ticket) => {
-        console.log(ticket);
         this.setState({ticket:ticket});
         this.setState({inProgress:0, gotTicket:1});})
+        
       .catch((errorObj) => {
         this.handleErrors(errorObj);
-        console.log('there is an error')
       });
   }
 
   //return to choosing a new ticket
   handleReturn =()=>{
     this.setState({inProgress:0, gotTicket:0});
-    console.log("I handled it")
   };
 
   callTicketAsOfficer = (counterId) => {
@@ -115,7 +99,7 @@ class App extends Component {
         <DisplayScreen ticketList={this.state.ticketList} servedTicketLists={this.servedTicketLists}/>
         <Body
         gotTicket={this.state.gotTicket} ticket={this.state.ticket} handleReturn={this.handleReturn}
-        inProgress={this.state.inProgress} counters={this.state.counters} onClick={this.getTicket} />
+        inProgress={this.state.inProgress} services={this.state.services} onClick={this.getTicket} />
         {/* <Switch>
           <Route path="/" exact component={Body} />
           <Route path="/counters" component={CarList}/>
