@@ -206,8 +206,20 @@ if (!function_exists('list_served_tickets')) {
 
 			$db = new SQLite3('../db.sqlite');
 
-			// Get count last served tickets from db
-			$statement = $db->prepare('SELECT ID, display_id, counter_id FROM TICKETS WHERE ts_served IS NOT NULL AND counter_id IS NOT NULL ORDER BY ts_served DESC LIMIT :n');
+			// Extract queues length for each service
+			$statement = $db->prepare('SELECT service_id, COUNT(*) as len FROM TICKETS	WHERE counter_id IS NULL AND ts_served IS NULL GROUP BY service_id');
+			$result = $statement->execute();
+			if ($result === false) {
+				throw new Error($db->lastErrorCode(), $db->lastErrorCode());
+			}
+
+			$lengths = array();
+			while ($s = $result->fetchArray(SQLITE3_ASSOC)) {
+				$lengths[$s['service_id']] = $s['len'];
+			}
+
+			// Extract `count` last served tickets from db
+			$statement = $db->prepare('SELECT ID, display_id, counter_id, service_id FROM TICKETS WHERE ts_served IS NOT NULL AND counter_id IS NOT NULL ORDER BY ts_served DESC LIMIT :n');
 			$statement->bindValue(":n", $count, SQLITE3_INTEGER);
 			$result = $statement->execute();
 
@@ -217,6 +229,22 @@ if (!function_exists('list_served_tickets')) {
 
 			$tickets = array();
 			while ($t = $result->fetchArray(SQLITE3_ASSOC)) {
+				// Rename fields to match endpoint definition
+				$t['ticketId'] = $t['ID'];
+				unset($t['ID']);
+
+				$t['displayId'] = $t['display_id'];
+				unset($t['display_id']);
+
+				$t['counterId'] = $t['counter_id'];
+				unset($t['counter_id']);
+
+				$t['serviceId'] = $t['service_id'];
+				unset($t['service_id']);
+
+				// Add length of queue
+				$t['queueLength'] = $lengths[$t['serviceId']];
+
 				array_push($tickets, $t);
 			}
 
