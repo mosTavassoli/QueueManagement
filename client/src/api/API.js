@@ -51,6 +51,22 @@ async function getTicketToServe(counterId){
 
 //Get list of tickets served (as public screen)
 
+async function getListOfServedTickets() {
+    try {
+      const response = await fetch(`${baseURL}/ticket?served`);
+      const listServedTickets = await response.json();
+      if (response.ok) {
+        console.log(listServedTickets);
+        return listServedTickets;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.log("Error", error);
+      throw error;
+    }
+  }
+
 
 //Modify a counter (as administrator)
 
@@ -58,5 +74,5 @@ async function getTicketToServe(counterId){
 //Create a new counter (as administrator)
 
 
-const API = {getCounters, getTicketToServe} ;
+const API = {getCounters, getTicketToServe, getListOfServedTickets} ;
 export default API;
