@@ -7,6 +7,7 @@ import Body from "./components/body";
 import DisplayScreen from "./components/DisplayScreen";
 import OfficerScreen from "./components/OfficerScreen";
 import { DISPLAY } from "./shared/displayScreen";
+import ManagerScreen from './components/ManagerScreen';
 
 class App extends Component {
   constructor(props) {
@@ -103,6 +104,9 @@ class App extends Component {
               ticketToCall={this.state.ticketToCall}
               callTicket={this.callTicketAsOfficer}
             />
+          </Route>
+          <Route path="/manager">
+            <ManagerScreen/>
           </Route>
           <Redirect from="/" exact to="/home" />
         </Switch>
