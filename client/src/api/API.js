@@ -27,7 +27,7 @@ async function getCounters() {
   }
 }
 
-//Request new tocket to service (as customer)
+//Request new ticket to service (as customer)
 async function getTicket(serviceId) {
   // return a new promise.
   return new Promise(function (resolve, reject) {
