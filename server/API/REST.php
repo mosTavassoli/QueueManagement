@@ -82,7 +82,7 @@ if(!function_exists("create_new_ticket")){
 
 //define the routes
 $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r){
-	$r->addRoute('POST', API_PATH."/tickets", "create_new_ticket");
+	$r->addRoute('POST', API_PATH."/ticket", "create_new_ticket");
 });
 
 // Fetch method and URI from somewhere
