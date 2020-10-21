@@ -21,3 +21,7 @@
 # Get list of tickets served (as public screen)
 - GET ticket?served
 	return [{ ticketId, displayId, counterId, serviceId, timestampServed, queueLength }, ...]
+
+# Get list of the available services
+- GET services
+	return [{ serviceId, serviceName, expectedSeconds}]
