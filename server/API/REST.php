@@ -219,7 +219,7 @@ if (!function_exists('list_served_tickets')) {
 			}
 
 			// Extract `count` last served tickets from db
-			$statement = $db->prepare('SELECT ID, display_id, counter_id, service_id FROM TICKETS WHERE ts_served IS NOT NULL AND counter_id IS NOT NULL ORDER BY ts_served DESC LIMIT :n');
+			$statement = $db->prepare('SELECT ID, display_id, counter_id, service_id, ts_served FROM TICKETS WHERE ts_served IS NOT NULL AND counter_id IS NOT NULL ORDER BY ts_served DESC LIMIT :n');
 			$statement->bindValue(":n", $count, SQLITE3_INTEGER);
 			$result = $statement->execute();
 
@@ -241,6 +241,9 @@ if (!function_exists('list_served_tickets')) {
 
 				$t['serviceId'] = $t['service_id'];
 				unset($t['service_id']);
+
+				$t['timestampServed'] = $t['ts_served'];
+				unset($t['ts_served']);
 
 				// Add length of queue
 				$t['queueLength'] = $lengths[$t['serviceId']];
