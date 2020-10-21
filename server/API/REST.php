@@ -77,20 +77,40 @@ if (!function_exists("create_new_ticket")) {
 	}
 }
 
-if (!function_exists('serve_ticket')) {
+if (!function_exists('get_tickets')) {
+	function get_tickets($vars) {
+		if (isset($_GET['toserve'])) {
 
-	function serve_ticket($vars) {
-
-		$db = null;
-		try {
 			// Get counter id from query
 			$counterId = null;
 			if (isset($_GET['counterId'])) {
 				$counterId = $_GET['counterId'];
 			} else {
-				throw new Error("counterId not set in URL query");
+				echo json_encode(array("success" => false, "reason" => "Expected parameter counterId in URL query"));
+				return;
 			}
 
+			serve_ticket(intval($counterId));
+		} else if (isset($_GET['served'])) {
+			// Get count from query
+			$count = 50;
+			if (isset($_GET['count'])) {
+				$count = $_GET['count'];
+			}
+
+			list_served_tickets(intval($count));
+		} else {
+			echo json_encode(array("success" => false, "reason" => 'Expected parameter toserve or served in URL query'));
+		}
+	}
+}
+
+if (!function_exists('serve_ticket')) {
+
+	function serve_ticket($counterId) {
+
+		$db = null;
+		try {
 			$db = new SQLite3('../db.sqlite');
 			// Get counter from db
 			$statement = $db->prepare('SELECT * FROM USERS WHERE ID = :counterId');
@@ -102,6 +122,10 @@ if (!function_exists('serve_ticket')) {
 			}
 
 			$counter = $result->fetchArray(SQLITE3_ASSOC);
+
+			if (!$counter) {
+				throw new Error('Parameter counterId wrong');
+			}
 
 			// Extract serviceIds associated to counter
 			$services = explode(',', $counter['comma_services']);
@@ -150,7 +174,7 @@ if (!function_exists('serve_ticket')) {
 
 					// Update selected ticket on db
 					$statement = $db->prepare('UPDATE TICKETS SET COUNTER_ID = :counterId, TS_SERVED = :tsServed WHERE ID = :ticketId');
-					$statement->bindValue(":counterId", intval($counterId), SQLITE3_INTEGER);
+					$statement->bindValue(":counterId", $counterId, SQLITE3_INTEGER);
 					$statement->bindValue(":tsServed", time(), SQLITE3_INTEGER);
 					$statement->bindValue(":ticketId", intval($ticket_to_serve['ID']), SQLITE3_INTEGER);
 					$result = $statement->execute();
@@ -162,6 +186,41 @@ if (!function_exists('serve_ticket')) {
 			} else {
 				echo json_encode(array('ticketId' => null, 'displayId' => null, 'serviceId' => null));
 			}
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+		} finally {
+			if ($db)
+				$db->close();
+		}
+	}
+}
+
+if (!function_exists('list_served_tickets')) {
+	function list_served_tickets($count) {
+		$db = null;
+		try {
+
+			if ($count <= 0) {
+				throw new Error("Parameter count is expected to be > 0");
+			}
+
+			$db = new SQLite3('../db.sqlite');
+
+			// Get count last served tickets from db
+			$statement = $db->prepare('SELECT ID, display_id, counter_id FROM TICKETS WHERE ts_served IS NOT NULL AND counter_id IS NOT NULL ORDER BY ts_served DESC LIMIT :n');
+			$statement->bindValue(":n", $count, SQLITE3_INTEGER);
+			$result = $statement->execute();
+
+			if ($result === false) {
+				throw new Error($db->lastErrorCode(), $db->lastErrorCode());
+			}
+
+			$tickets = array();
+			while ($t = $result->fetchArray(SQLITE3_ASSOC)) {
+				array_push($tickets, $t);
+			}
+
+			echo json_encode($tickets);
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
 		} finally {
@@ -200,8 +259,7 @@ if (!function_exists("print_services")) {
 //define the routes
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
 	$r->addRoute('POST', API_PATH . "/ticket", "create_new_ticket");
-	$r->addRoute('GET', API_PATH . '/ticket', 'serve_ticket');
-
+	$r->addRoute('GET', API_PATH . '/ticket', 'get_tickets');
 	$r->addRoute('GET', API_PATH . '/services', 'print_services');
 });
 
