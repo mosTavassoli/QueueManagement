@@ -19,7 +19,6 @@ if (!function_exists("create_new_ticket")) {
 	 * @return void
 	 */
 	function create_new_ticket($vars) {
-		var_dump($_POST);
 		$service_id = $_POST["serviceID"];
 		try {
 			$db = new SQLite3("../db.sqlite");
@@ -81,10 +80,16 @@ if (!function_exists('serve_ticket')) {
 
 	function serve_ticket($vars) {
 
-		// Get counter id from query
-		$counterId = isset($_GET['counterId']) ? $_GET['counterId'] : die();
 
 		try {
+			// Get counter id from query
+			$counterId = null;
+			if (isset($_GET['counterId'])) {
+				$counterId = $_GET['counterId'];
+			} else {
+				throw new Error("counterId not set in URL query");
+			}
+
 			$db = new SQLite3('../db.sqlite');
 			// Get counter from db
 			$statement = $db->prepare('SELECT * FROM USERS WHERE ID = :counterId');
@@ -108,12 +113,10 @@ if (!function_exists('serve_ticket')) {
 				$expected_s[$time['ID']] = $time['expected_s'];
 			}
 
-			// var_dump($expected_s);
-
 			// Extract queue for each service
 			$queues = array();
 			foreach ($services as $s) {
-				$statement = $db->prepare('SELECT * FROM TICKETS WHERE SERVICE_ID = :serviceId AND TS_SERVED IS NULL ORDER BY TS_CREATE ASC');
+				$statement = $db->prepare('SELECT * FROM TICKETS WHERE SERVICE_ID = :serviceId AND COUNTER_ID IS NULL AND TS_SERVED IS NULL ORDER BY TS_CREATE ASC');
 				$statement->bindValue(":serviceId", intval($s), SQLITE3_INTEGER);
 				$result = $statement->execute();
 
@@ -127,41 +130,41 @@ if (!function_exists('serve_ticket')) {
 				}
 			}
 
-			// Order queues, index 0 will be popped
-			usort($queues, function ($a, $b) use ($expected_s) {
-				// var_dump($a);
-				// var_dump($b);
+			if (count($queues) > 0) {
+				// Order queues, index 0 will be popped
+				usort($queues, function ($a, $b) use ($expected_s) {
+					if (count($a) > 0 && count($b) > 0 && count($a) === count($b)) {
+						return $expected_s[$b[0]['service_id']] - $expected_s[$a[0]['service_id']];
+					} else {
+						return count($b) - count($a);
+					}
+				});
 
-				// echo count($a);
-				// echo count($b);
-
-				echo (count($a) > 0 && count($b) > 0 && count($a) === count($b));
-
-				if (count($a) > 0 && count($b) > 0 && count($a) === count($b)) {
-					return $expected_s[$b[0]['service_id']] - $expected_s[$a[0]['service_id']];
+				// Pop first queue
+				$queue = $queues[0];
+				if (count($queue) <= 0) {
+					echo json_encode(array('ticketId' => null, 'displayId' => null, 'serviceId' => null));
 				} else {
-					return count($b) - count($a);
+					$ticket_to_serve = $queues[0][0];
+
+					// Update selected ticket on db
+					$statement = $db->prepare('UPDATE TICKETS SET COUNTER_ID = :counterId, TS_SERVED = :tsServed WHERE ID = :ticketId');
+					$statement->bindValue(":counterId", intval($counterId), SQLITE3_INTEGER);
+					$statement->bindValue(":tsServed", time(), SQLITE3_INTEGER);
+					$statement->bindValue(":ticketId", intval($ticket_to_serve['ID']), SQLITE3_INTEGER);
+					$result = $statement->execute();
+					if ($result === false) {
+						throw new Error($db->lastErrorCode(), $db->lastErrorCode());
+					}
+					echo json_encode(array('ticketId' => $ticket_to_serve['ID'], 'displayId' => $ticket_to_serve['display_id'], 'serviceId' => $ticket_to_serve['service_id']));
 				}
-			});
-
-			// Pop first queue
-			$ticket_to_serve = $queues[0][0];
-
-			// Update selected ticket on db
-			$statement = $db->prepare('UPDATE TICKETS SET COUNTER_ID = :counterId, TS_SERVED = :tsServed WHERE ID = :ticketId');
-			$statement->bindValue(":counterId", intval($counterId), SQLITE3_INTEGER);
-			$statement->bindValue(":tsServed", time(), SQLITE3_INTEGER);
-			$statement->bindValue(":ticketId", intval($ticket_to_serve['ID']), SQLITE3_INTEGER);
-			$result = $statement->execute();
-			if ($result === false) {
-				throw new Error($db->lastErrorCode(), $db->lastErrorCode());
+			} else {
+				echo json_encode(array('ticketId' => null, 'displayId' => null, 'serviceId' => null));
 			}
-
-			$db->close();
-
-			echo json_encode(array('ticketId' => $ticket_to_serve['ID'], 'displayId' => $ticket_to_serve['display_id'], 'serviceId' => $ticket_to_serve['service_id']));
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+		} finally {
+			$db->close();
 		}
 	}
 }
