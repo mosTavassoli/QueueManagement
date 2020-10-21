@@ -6,8 +6,8 @@ header("Access-Control-Allow-Methods: PUT, GET, POST");
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
 header("Content-Type: application/json");
 
-//define("API_PATH", "/API/REST.php");
-define("API_PATH", "/sfteng/office-queue/server/API/REST.php");
+define("API_PATH", "/API/REST.php");
+// define("API_PATH", "/sfteng/office-queue/server/API/REST.php");
 
 define("START_OF_DISPLAY_ID", 1); //this is the display id that will be used as start each day
 
@@ -146,7 +146,7 @@ if (!function_exists('serve_ticket')) {
 				if (count($queue) <= 0) {
 					echo json_encode(array('ticketId' => null, 'displayId' => null, 'serviceId' => null));
 				} else {
-					$ticket_to_serve = $queues[0][0];
+					$ticket_to_serve = $queue[0];
 
 					// Update selected ticket on db
 					$statement = $db->prepare('UPDATE TICKETS SET COUNTER_ID = :counterId, TS_SERVED = :tsServed WHERE ID = :ticketId');
@@ -171,9 +171,9 @@ if (!function_exists('serve_ticket')) {
 	}
 }
 
-if(!function_exists("print_services")){
-	function print_services($vars){
-		try{
+if (!function_exists("print_services")) {
+	function print_services($vars) {
+		try {
 			$db = new SQLite3("../db.sqlite");
 
 			$result = $db->query("SELECT * FROM services");
@@ -181,16 +181,15 @@ if(!function_exists("print_services")){
 			if ($result === false) {
 				throw new Error($db->lastErrorCode(), $db->lastErrorCode());
 			}
-			
+
 			$ret = array();
 
-			while($value = $result->fetchArray(SQLITE3_ASSOC)){
+			while ($value = $result->fetchArray(SQLITE3_ASSOC)) {
 				$ret[] = array("serviceId" => $value["ID"], "serviceName" => $value["name"], "expectedSeconds" => $value["expected_s"]);
 			}
 
 			echo json_encode($ret);
-		}
-		catch(Exception $e){
+		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
 		}
 	}
