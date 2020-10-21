@@ -37,11 +37,8 @@ if (!function_exists("create_new_ticket")) {
 				return;
 			}
 
-			//getting the most recent dispplay_id. This way is definitely not parallel safe
+			//getting the most recent display_id. This way is definitely not parallel safe
 			//but using SQLite means you don't give a single f* of parallelism
-
-			$db = new SQLite3("../db.sqlite");
-			//checking if the service exists
 			$value = $db->querySingle("SELECT ts_create, display_id FROM tickets ORDER BY ts_create DESC LIMIT 1", true);
 			if ($value === false) throw new Error($db->lastErrorCode(), $db->lastErrorCode());
 
@@ -53,12 +50,25 @@ if (!function_exists("create_new_ticket")) {
 
 			//create the ticket
 
-			$statement = $db->prepare("INSERT INTO tickets (display_id, service_id, create_ts) VALUES (:displayId, :serviceId, :creationTs)");
+			$statement = $db->prepare("INSERT INTO tickets (display_id, service_id, ts_create) VALUES (:displayId, :serviceId, :creationTs)");
 			$statement->bindValue(":displayId", $new_ticket_display_id, SQLITE3_INTEGER);
 			$statement->bindValue(":serviceId", $service_id, SQLITE3_INTEGER);
 			$statement->bindValue(":creationTs", time(), SQLITE3_INTEGER);
 			$result = $statement->execute();
 			if ($result === false) throw new Error($db->lastErrorCode(), $db->lastErrorCode());
+
+			//getting the length of the queue
+			//checking if the service exists
+			$statement = $db->prepare("SELECT COUNT(*) FROM tickets WHERE service_id = :serviceId AND ts_served IS NULL");
+			$statement->bindValue(":serviceId", $service_id, SQLITE3_INTEGER);
+			$result = $statement->execute();
+
+			if ($result === false) throw new Error($db->lastErrorCode(), $db->lastErrorCode());
+
+			$value = $result->fetchArray(SQLITE3_NUM);
+			$queue_length = $value[0];
+
+			echo json_encode(array("success" => true, "displayId" => $new_ticket_display_id, "ticketId" => $db->lastInsertRowID(), "serviceId" => intval($service_id), "queueLength" => $queue_length));
 
 			$db->close();
 		} catch (Exception $e) {
@@ -160,7 +170,7 @@ if (!function_exists('serve_ticket')) {
 
 //define the routes
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
-	$r->addRoute('POST', API_PATH . "/tickets", "create_new_ticket");
+	$r->addRoute('POST', API_PATH . "/ticket", "create_new_ticket");
 	$r->addRoute('GET', API_PATH . '/ticket', 'serve_ticket');
 });
 

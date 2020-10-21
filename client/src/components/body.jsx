@@ -11,7 +11,8 @@ class Body extends Component {
         
        {/* <Sidebar cats={this.props.cats} brands={this.props.brands}  onClick={this.props.onClick}/> */}
        <CounterList
-       inProgress={this.props.inProgress} gotTicket={this.props.gotTicket}
+       inProgress={this.props.inProgress} gotTicket={this.props.gotTicket} ticket={this.props.ticket}
+       handleReturn={this.props.handleReturn}
        onClick={this.props.onClick} counters={this.props.counters}/>
        </div></div>
       </Fragment>
