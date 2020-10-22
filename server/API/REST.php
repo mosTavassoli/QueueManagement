@@ -7,7 +7,7 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 header("Content-Type: application/json");
 
 define("API_PATH", "/API/REST.php");
-// define("API_PATH", "/sfteng/office-queue/server/API/REST.php");
+//define("API_PATH", "/sfteng/office-queue/server/API/REST.php");
 
 define("START_OF_DISPLAY_ID", 1); //this is the display id that will be used as start each day
 
@@ -195,6 +195,103 @@ if (!function_exists('serve_ticket')) {
 	}
 }
 
+if (!function_exists("create_new_counter")) {
+
+	/**
+	 * Create a new counter. Will take informations from $_POST
+	 * 
+	 * @return void
+	 */
+	function create_new_counter($vars) {
+		$counter_id = $_POST["counterID"];
+		try {
+			$db = new SQLite3("../db.sqlite");
+			//checking if the counter exists
+			$statement = $db->prepare("SELECT COUNT(*) FROM counters WHERE ID = :counterId");
+			$statement->bindValue(":counterId", $counter_id, SQLITE3_INTEGER);
+			$result = $statement->execute();
+
+			if ($result === false) throw new Error($db->lastErrorCode(), $db->lastErrorCode());
+
+			$value = $result->fetchArray(SQLITE3_NUM);
+
+			if (intval($value[0]) > 0) {
+				echo json_encode(array("success" => false, "reason" => "Counter with this ID already exists"));
+				return;
+			}
+
+			//create the counter
+
+			$services = $_POST["servicesIds"];
+			if(!preg_match("/^([0-9]+,?)+$/i", $services)){
+				echo json_encode(array("success" => false, "reason" => "Service IDs format is wrong"));
+				return;
+			}
+
+			$statement = $db->prepare("INSERT INTO users (ID, comma_services) VALUES (:counterId, :comma_services)");
+			$statement->bindValue(":counterId", $counter_id, SQLITE3_INTEGER);
+			$statement->bindValue(":comma_services", $services, SQLITE3_TEXT);
+
+			$result = $statement->execute();
+			if ($result === false) throw new Error($db->lastErrorCode(), $db->lastErrorCode());
+
+			echo json_encode(array("success" => true, "counterId" => $counter_id, "servicesIds" => explode(",", $services)));
+
+			$db->close();
+		} catch (Exception $e) {
+			echo json_encode(array("success" => false, "reason" => $e->getMessage()));
+		}
+	}
+}
+
+if (!function_exists('delete_counter')){
+	function delete_counter($vars){
+		try{
+			parse_str(file_get_contents("php://input"), $_DELETE);
+
+			$db = new SQLite3("../db.sqlite");
+
+			$statement = $db->prepare('DELETE FROM users WHERE ID=:counterid');
+			$statement->bindValue(":counterId", $_DELETE["counterId"], SQLITE3_INTEGER);
+
+			$result = $statement->execute();
+			if ($result === false) throw new Error($db->lastErrorCode(), $db->lastErrorCode());
+
+			echo json_encode(array('success' => true));
+
+			$db->close();
+		} catch (Exception $e){
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+		}
+	}
+}
+
+if(!function_exists('edit_counter')){
+		try{
+			parse_str(file_get_contents("php://input"), $_PATCH);
+
+			if(!preg_match("/^([0-9]+,?)+$/i", $_PATCH["serviceIds"])){
+				echo json_encode(array("success" => false, "reason" => "Service IDs format is wrong"));
+				return;
+			}
+
+			$db = new SQLite3("../db.sqlite");
+
+			$statement = $db->prepare('UPDATE TABLE users (comma_services) VALUES (:comma_services) WHERE ID=:counterid');
+			$statement->bindValue(":counterId", $_PATCH["counterId"], SQLITE3_INTEGER);
+			$statement->bindValue(":comma_services", $_PATCH["serviceIds"], SQLITE3_TEXT);
+
+			$result = $statement->execute();
+			if ($result === false) throw new Error($db->lastErrorCode(), $db->lastErrorCode());
+
+			echo json_encode(array('success' => true));
+
+			$db->close();
+		} catch (Exception $e){
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+		}
+}
+
 if (!function_exists('list_served_tickets')) {
 	function list_served_tickets($count) {
 		$db = null;
@@ -285,12 +382,44 @@ if (!function_exists("print_services")) {
 	}
 }
 
+if (!function_exists("print_counters")) {
+	function print_counters($vars) {
+		try {
+			$db = new SQLite3("../db.sqlite");
+
+			$result = $db->query("SELECT * FROM users");
+
+			if ($result === false) {
+				throw new Error($db->lastErrorCode(), $db->lastErrorCode());
+			}
+
+			$ret = array();
+
+			while ($value = $result->fetchArray(SQLITE3_ASSOC)) {
+				$ret[] = array("counterId" => $value["ID"], "serviceIds" => explode(",", $value["comma_services"]));
+			}
+
+			echo json_encode($ret);
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+		}
+	}
+}
+
+if(!function_exists("print_counters"))
+
 /*Documentation for FastRoute can be found here: https://github.com/nikic/FastRoute */
 
 //define the routes
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
 	$r->addRoute('POST', API_PATH . "/ticket", "create_new_ticket");
 	$r->addRoute('GET', API_PATH . '/ticket', 'get_tickets');
+
+	$r->addRoute('POST', API_PATH . '/counter', 'create_new_counter');
+	$r->addRoute('PATCH', API_PATH . '/counter', 'edit_counter');
+	$r->addRoute('DELETE', API_PATH . '/counter', 'delete_counter');
+	$r->addRoute('GET', API_PATH . '/counters', 'print_counters');
+
 	$r->addRoute('GET', API_PATH . '/services', 'print_services');
 });
 

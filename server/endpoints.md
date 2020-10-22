@@ -3,12 +3,16 @@
 	return [{ counterId, [serviceId1, ...] }, ...]
 
 # Create a new counter (as administrator)
-- POST counters params: counterId, array(serviceId)
-	return { success:TRUE/FALSE, counterId, [serviceId1, ...] }
+- POST counter params: counterId&serviceIds=serviceId1,serviceId2,...
+	return { success:TRUE/FALSE, counterId, serviceIds : [serviceId1, ...] }
 
 # Modify a counter (as administrator)
-- PATCH counters params: counterId, array(serviceId)
-	return  { success:TRUE/FALSE, counterId, [serviceId1, ...] }
+- PATCH counter params: counterId&serviceIds=serviceId1,serviceId2,...
+	return  { success:TRUE/FALSE, counterId, servicesIds : [serviceId1, ...] }
+
+# Delete a counter (as administrator)
+- DELETE counter params: counterId
+	return { success:TRUE/FALSE}
 
 # Request new ticket to service (as customer)
 - POST ticket params: serviceId
