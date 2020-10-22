@@ -36,9 +36,9 @@ class OfficerScreen extends React.Component {
     if(this.state.called){
       return (
         <Container>
-        <Row>
-        <Col md={5}></Col>
-        <Button variant="primary" style={{marginTop : 20}} onClick={this.callCitizen.bind(this)}>
+        <Row className="justify-content-md-center">
+        
+        <Button variant="primary" className='mt-5' size="lg" onClick={this.callCitizen.bind(this)}>
         Call next citizen
         </Button>
         
@@ -48,13 +48,14 @@ class OfficerScreen extends React.Component {
     }else{
         return (
             <Container>
-            <Row>
-            <Col md={5}></Col>
-            Ticket number: {this.props.ticketToCall}
+            <Row className="justify-content-md-center" >
+            <div style={{fontSize: 80}}>
+                Ticket number: {this.props.ticketToCall}
+            </div>
             </Row>
-            <Row>
-            <Col md={5}></Col>
-            <Button variant="success" style={{marginTop : 20}} onClick={this.served.bind(this)}>
+            <Row className="justify-content-md-center">
+            
+            <Button variant="success" className='mt-3' size="lg" onClick={this.served.bind(this)}>
             Ticket served
             </Button>
             
@@ -64,14 +65,19 @@ class OfficerScreen extends React.Component {
     }}else{
         return(
         <Container>
-            <Row style={{marginTop : 20}}>
-                <Col md={4}></Col>
-                Select counter:
-                <form onSubmit={this.choseCounter.bind(this)}>
-                    <input type="number" ref="counter"></input>
-                    <Button variant="primary" type="submit">Submit</Button>
-                </form>
+            <Row className="justify-content-md-center">  
+                <div className='mt-3'>Select counter:</div>
             </Row>
+                <form onSubmit={this.choseCounter.bind(this)}>
+            <Row className="justify-content-md-center ">        
+                <input className='mt-3' type="number" ref="counter" value="1"></input>
+            </Row>
+            <Row className="justify-content-md-center">
+                <Button className='mt-3' variant="primary" type="submit">Submit</Button>
+            </Row>    
+            </form>
+            
+            
         </Container>);
     }
     }

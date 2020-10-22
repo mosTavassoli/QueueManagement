@@ -75,13 +75,11 @@ class App extends Component {
   };
 
   callTicketAsOfficer = (counterId) => {
-    
-    //this.setState({ticketToCall: 9});
 
     API.getTicketToServe(counterId)
     .then((ticket) => {
       
-      this.setState({ticketToCall: ticket}); // does this work? maybe ticket.something
+      this.setState({ticketToCall: ticket.ticketId}); // does this work? maybe ticket.something
     })
     .catch((errorObj) => {
       
