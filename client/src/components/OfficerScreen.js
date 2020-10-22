@@ -70,7 +70,7 @@ class OfficerScreen extends React.Component {
             </Row>
                 <form onSubmit={this.choseCounter.bind(this)}>
             <Row className="justify-content-md-center ">        
-                <input className='mt-3' type="number" ref="counter" value="1"></input>
+                <input className='mt-3' type="number" ref="counter" defaultValue="1"></input>
             </Row>
             <Row className="justify-content-md-center">
                 <Button className='mt-3' variant="primary" type="submit">Submit</Button>
