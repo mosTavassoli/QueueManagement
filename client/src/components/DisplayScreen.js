@@ -2,6 +2,10 @@ import React from "react";
 import { Col, Container, Row, Table } from "react-bootstrap";
 
 class DiaplayList extends React.Component {
+  componentDidMount(){
+    this.props.servedTicketLists();
+  }
+  
     render(){
         return(
             <Container>
@@ -17,14 +21,12 @@ class DiaplayList extends React.Component {
                         </tr>
                       </thead>
                       <tbody>
-                        {this.props.displayList?.map((display, index) => (
-                          
-                          <tr key={index}>
-                            <td>{display.ticketId}</td>
-                            <td>{display.counterId}</td>
+                          <tr >
+                           
+                            <td>{this.props.ticketList.ticketId}</td>
+                            <td>{this.props.ticketList.counterId}</td>
                             
                           </tr>
-                        ))}
                       </tbody>
                     </Table>
 

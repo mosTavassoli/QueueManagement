@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import CounterList from "./counterList";
+import ServiceList from "./serviceList";
 
 class Body extends Component {
   state = {};
@@ -10,10 +10,10 @@ class Body extends Component {
         <div className="row">
         
        {/* <Sidebar cats={this.props.cats} brands={this.props.brands}  onClick={this.props.onClick}/> */}
-       <CounterList
+       <ServiceList
        inProgress={this.props.inProgress} gotTicket={this.props.gotTicket} ticket={this.props.ticket}
        handleReturn={this.props.handleReturn}
-       onClick={this.props.onClick} counters={this.props.counters}/>
+       onClick={this.props.onClick} services={this.props.services}/>
        </div></div>
       </Fragment>
     );

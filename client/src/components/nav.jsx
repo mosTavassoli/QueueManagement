@@ -25,6 +25,10 @@ class Navigation extends Component {
           
           <ul className="navbar-nav px-3">
             <li className="nav-item text-nowrap float-right">
+              <Link to="/officer"
+               className="navbar-brand col-md-3 col-lg-2 mr-0 mr-0 px-3">
+                Officer Screen
+              </Link>
             </li>
           </ul>
         </nav>

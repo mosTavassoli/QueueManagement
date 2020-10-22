@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 
-class CounterList extends Component {
+class ServiceList extends Component {
   state = {};
   render() {
     return (
@@ -21,10 +21,10 @@ class CounterList extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {this.props.counters.map((counter) => (
-                    <CounterRow
-                      key={counter.id}
-                      counter={counter}
+                  {this.props.services.map((service) => (
+                    <ServiceRow
+                      key={service.serviceId}
+                      service={service}
                       onClick={this.props.onClick}
                       inProgress={this.props.inProgress}
                     />
@@ -42,6 +42,9 @@ class CounterList extends Component {
                   )}
                   {this.props.ticket.serviceId === 2 && (
                     <p>Service : Sending Package</p>
+                  )}
+                  {this.props.ticket.serviceId === 3 && (
+                    <p>Service : General</p>
                   )}
                 </h5>
 
@@ -61,31 +64,31 @@ class CounterList extends Component {
     );
   }
 }
-function CounterRow(props) {
+function ServiceRow(props) {
   return (
-    <tr counterid={props.counter.id}>
-      <CounterData
+    <tr serviceid={props.service.serviceId}>
+      <ServiceData
         inProgress={props.inProgress}
-        counter={props.counter}
+        service={props.service}
         onClick={props.onClick}
       />
     </tr>
   );
 }
-function CounterData(props) {
+function ServiceData(props) {
   return (
     <>
-      <td>{props.counter.id}</td>
-      <td>{props.counter.name}</td>
-      <td>{props.counter.counters}</td>
+      <td>{props.service.serviceId}</td>
+      <td>{props.service.serviceName}</td>
+      <td>All Counters</td>
       {/*when the button is clicked the spinner will be shown till the data is ready*/}
       <td>
         {props.inProgress === 0 ? (
           <button
             className="btn btn-outline-success"
-            value={props.counter.id}
+            value={props.service.serviceId}
             onClick={() => {
-              props.onClick(1);
+              props.onClick(props.service.serviceId);
             }}
           >
             New Ticket
@@ -105,4 +108,4 @@ function CounterData(props) {
 //     return "Available";
 //   }
 // }
-export default CounterList;
+export default ServiceList;

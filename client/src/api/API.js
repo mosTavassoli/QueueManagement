@@ -1,4 +1,4 @@
-import Counter from "./Counter";
+import Service from "./Service";
 import Ticket from "./Ticket";
 const baseURL = "/API/REST.php";
 
@@ -14,20 +14,20 @@ const baseURL = "/API/REST.php";
 //     }
 // }
 
-//Returns list of counters with the services they are associated with
-async function getCounters() {
-  let url = "/counters";
+//Returns list of services
+async function getServices() {
+  let url = "/services";
   const response = await fetch(baseURL + url);
-  const countersJson = await response.json();
+  const serviceJson = await response.json();
   if (response.ok) {
-    return countersJson.map((c) => new Counter(c.counterId, c.serviceId));
+    return serviceJson.map((s) => new Service(s.serviceId, s.serviceName));
   } else {
-    let err = { status: response.status, errObj: countersJson };
+    let err = { status: response.status, errObj: serviceJson };
     throw err; // An object with the error coming from the server
   }
 }
 
-//Request new tocket to service (as customer)
+//Request new ticket to service (as customer)
 async function getTicket(serviceId) {
   // return a new promise.
   return new Promise(function (resolve, reject) {
@@ -39,7 +39,7 @@ async function getTicket(serviceId) {
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.onload = function () {
-      if (req.status == 200) {
+      if (req.status === 200) {
         const response = req.response;
         let obj = JSON.parse(response);
         const ticket = new Ticket(obj.ticketId, obj.displayId, obj.serviceId, obj.queueLength, obj.success);
@@ -81,8 +81,7 @@ async function getListOfServedTickets() {
       const response = await fetch(`${baseURL}/ticket?served`);
       const listServedTickets = await response.json();
       if (response.ok) {
-        console.log(listServedTickets);
-        return listServedTickets;
+        return listServedTickets[0];
       } else {
         return [];
       }
@@ -98,5 +97,5 @@ async function getListOfServedTickets() {
 //Create a new counter (as administrator)
 
 
-const API = {getCounters, getTicketToServe, getListOfServedTickets,getTicket} ;
+const API = {getServices, getTicketToServe, getListOfServedTickets,getTicket} ;
 export default API;
