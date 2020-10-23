@@ -235,7 +235,7 @@ if (!function_exists("create_new_counter")) {
 			//create the counter
 
 			$services = $_POST["servicesIds"];
-			if(!preg_match("/^([0-9]+,?)+[0-9]+$/i", $services)){
+			if(!preg_match("/^([0-9]*,?)+[0-9]+$/i", $services)){
 				echo json_encode(array("success" => false, "reason" => "Service IDs format is wrong"));
 				return;
 			}
@@ -283,7 +283,7 @@ if(!function_exists('edit_counter')){
 		try{
 			parse_str(file_get_contents("php://input"), $_PATCH);
 
-			if(!preg_match("/^([0-9]+,?)+[0-9]+$/i", $_PATCH["serviceIds"])){
+			if(!preg_match("/^([0-9]*,?)+[0-9]+$/i", $_PATCH["serviceIds"])){
 				echo json_encode(array("success" => false, "reason" => "Service IDs format is wrong"));
 				return;
 			}
