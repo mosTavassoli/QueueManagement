@@ -11,6 +11,18 @@ define("API_PATH", "/API/REST.php");
 
 define("START_OF_DISPLAY_ID", 1); //this is the display id that will be used as start each day
 
+/* Turning warning and notices into exceptions */
+
+set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext) {
+    // error was suppressed with the @-operator
+    if (0 === error_reporting()) {
+        return false;
+    }
+
+    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+});
+
+
 /* Functions that implements endpoints */
 if (!function_exists("create_new_ticket")) {
 
@@ -267,6 +279,7 @@ if (!function_exists('delete_counter')){
 }
 
 if(!function_exists('edit_counter')){
+	function edit_counter(){
 		try{
 			parse_str(file_get_contents("php://input"), $_PATCH);
 
@@ -290,6 +303,7 @@ if(!function_exists('edit_counter')){
 		} catch (Exception $e){
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
 		}
+	}
 }
 
 if (!function_exists('list_served_tickets')) {
@@ -405,8 +419,6 @@ if (!function_exists("print_counters")) {
 		}
 	}
 }
-
-if(!function_exists("print_counters"))
 
 /*Documentation for FastRoute can be found here: https://github.com/nikic/FastRoute */
 
