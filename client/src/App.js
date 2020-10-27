@@ -6,8 +6,7 @@ import Nav from "./components/nav";
 import Body from "./components/body";
 import DisplayScreen from "./components/DisplayScreen";
 import OfficerScreen from "./components/OfficerScreen";
-import { DISPLAY } from "./shared/displayScreen";
-import ManagerScreen from './components/ManagerScreen';
+import ManagerScreen from "./components/ManagerScreen";
 
 class App extends Component {
   constructor(props) {
@@ -18,7 +17,7 @@ class App extends Component {
       ticket: {},
       ticketList: [],
       services: [],
-      ticketToCall: 453,
+      ticketToCall: 0,
     };
   }
 
@@ -56,18 +55,15 @@ class App extends Component {
   };
 
   callTicketAsOfficer = (counterId) => {
-
     API.getTicketToServe(counterId)
-    .then((ticket) => {
-      
-      this.setState({ticketToCall: ticket.ticketId});
-    })
-    .catch((errorObj) => {
-      
-      console.log(errorObj);
-      //this.handleErrors(errorObj);
-    });
-  }
+      .then((ticket) => {
+        this.setState({ ticketToCall: ticket.ticketId });
+      })
+      .catch((errorObj) => {
+        console.log(errorObj);
+        //this.handleErrors(errorObj);
+      });
+  };
 
   servedTicketLists = () => {
     API.getListOfServedTickets()
@@ -107,7 +103,7 @@ class App extends Component {
             />
           </Route>
           <Route path="/manager">
-            <ManagerScreen/>
+            <ManagerScreen />
           </Route>
           <Redirect from="/" exact to="/home" />
         </Switch>
